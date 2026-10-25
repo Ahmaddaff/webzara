@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ma luv ma cutie | Tempat Tenangku</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Sacramento&display=swap" rel="stylesheet">
+
+    <!-- YouTube IFrame API untuk "Penjaga Hati - Nadhif Basalamah" -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        roseGold: '#e8a598',
+                        romanticPink: '#f472b6',
+                        softLavender: '#c084fc',
+                        deepNight: '#0f0c1b',
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        hand: ['Caveat', 'cursive'],
+                        romantic: ['Sacramento', 'cursive'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 15px rgba(244, 114, 182, 0.4)' },
+                            '100%': { boxShadow: '0 0 30px rgba(244, 114, 182, 0.8), 0 0 45px rgba(192, 132, 252, 0.6)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0c20 0%, #1a102f 40%, #2a0826 70%, #120317 100%);
+            color: #f3f4f6;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f0c20;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ec4899;
+            border-radius: 10px;
+        }
+
+        /* Glassmorphism elements */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .glass-card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(244, 114, 182, 0.4);
+            box-shadow: 0 15px 35px rgba(236, 72, 153, 0.25);
+        }
+
+        /* Tape visual feature on polaroids */
+        .polaroid-tape {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
+            width: 90px;
+            height: 26px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+
+        /* Envelope CSS Animation */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background: #9333ea;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.5s;
+        }
+        .envelope:hover {
+            transform: scale(1.03);
+        }
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #a855f7;
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out, z-index 0.6s;
+            z-index: 4;
+        }
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid #7e22ce;
+            border-right: 150px solid #7e22ce;
+            border-bottom: 100px solid #6b21a8;
+            border-radius: 0 0 12px 12px;
+            z-index: 3;
+        }
+        .letter-preview {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            right: 15px;
+            height: 170px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            color: #1f2937;
+            transition: transform 0.6s ease-in-out;
+            z-index: 2;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+        }
+        .envelope.open .letter-preview {
+            transform: translateY(-80px);
+        }
+
+        /* Heart Canvas Overlay */
+        #heartCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* Polaroid image aspect ratio 1:1 with object-fit cover */
+        .polaroid-img-container {
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+        }
+        .polaroid-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        .modal-img-container {
+            overflow: hidden;
+        }
+        .modal-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 font-sans pb-24 relative">
+
+    <!-- Interactive Heart Floating Canvas -->
+    <canvas id="heartCanvas"></canvas>
+
+    <!-- Floating Audio Control Header -->
+    <header class="fixed top-4 right-4 sm:top-6 sm:right-6 z-40">
+        <button id="musicToggleBtn" onclick="toggleMusic()" class="glass-card px-4 py-2.5 rounded-full flex items-center gap-3 border border-pink-500/30 text-pink-300 hover:text-white hover:bg-pink-500/20 transition-all duration-300 shadow-lg text-xs sm:text-sm backdrop-blur-md">
+            <i id="musicIcon" class="fas fa-music text-pink-400 animate-pulse"></i>
+            <span id="musicText" class="font-medium">Putar Lagu</span>
+        </button>
+        <!-- Hidden YouTube player host (diluar skrin tetapi tetap dirender supaya main) -->
+        <div id="ytPlayer" style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px;top:0;overflow:hidden;"></div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 pt-12 sm:pt-16 flex flex-col items-center">
+
+        <!-- Hero Title Section -->
+        <section class="text-center my-8 sm:my-12 animate-float max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/30 text-pink-300 text-xs sm:text-sm font-medium mb-4">
+                <i class="fas fa-heart text-pink-400 animate-bounce"></i> Special For My Cutie
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-rose-200 to-purple-300 font-sans leading-tight">
+                ma luv ma cutie
+            </h1>
+            <p class="mt-4 text-base sm:text-lg text-pink-100/80 font-light leading-relaxed max-w-2xl mx-auto px-2">
+                "Tempat paling aman & paling tenang buat aku di tengah ribut dan capenya dunia. Makasih ya udah selalu ada..."
+            </p>
+        </section>
+
+        <!-- Live Love Days Counter -->
+        <section class="w-full max-w-3xl glass-card rounded-3xl p-6 sm:p-8 mb-16 text-center shadow-2xl relative overflow-hidden border border-pink-500/20">
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-10 -top-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex items-center justify-center gap-2 text-pink-300 text-sm font-semibold uppercase tracking-wider mb-2">
+                <i class="fas fa-hourglass-half"></i> Kita Udah Bareng-Bareng Selama
+            </div>
+            
+            <!-- Dynamic Timer Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 my-6">
+                <div class="glass-card p-3 sm:p-4 rounded-2xl border border-pink-400/20">
+                    <span id="daysCount" class="block text-2xl sm:text-4xl font-extrabold text-pink-300">0</span>
+                    <span class="text-xs text-slate-400 font-medium">Hari</span>
+                </div>
+                <div class="glass-card p-3 sm:p-4 rounded-2xl border border-pink-400/20">
+                    <span id="hoursCount" class="block text-2xl sm:text-4xl font-extrabold text-pink-300">0</span>
+                    <span class="text-xs text-slate-400 font-medium">Jam</span>
+                </div>
+                <div class="glass-card p-3 sm:p-4 rounded-2xl border border-pink-400/20">
+                    <span id="minutesCount" class="block text-2xl sm:text-4xl font-extrabold text-pink-300">0</span>
+                    <span class="text-xs text-slate-400 font-medium">Menit</span>
+                </div>
+                <div class="glass-card p-3 sm:p-4 rounded-2xl border border-pink-400/20">
+                    <span id="secondsCount" class="block text-2xl sm:text-4xl font-extrabold text-pink-300">0</span>
+                    <span class="text-xs text-slate-400 font-medium">Detik</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Title for Polaroid Gallery -->
+        <div class="text-center mb-10">
+            <h2 class="text-2xl sm:text-3xl font-bold text-pink-200 font-sans flex items-center justify-center gap-3">
+                <i class="fas fa-images text-pink-400"></i> Galeri Foto Kita & Pelukan Kata
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">Klik gambar untuk melihat foto kita berdua ✨</p>
+        </div>
+
+        <!-- 10 Polaroid Photo Cards Grid — 2 per baris -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10 w-full max-w-4xl mb-20" id="galleryGrid">
+            <!-- Dynamically populated by JavaScript -->
+        </section>
+
+        <!-- Virtual Hug Button Banner -->
+        <section class="w-full max-w-3xl glass-card rounded-3xl p-8 mb-20 text-center relative overflow-hidden border border-pink-500/30 bg-gradient-to-r from-pink-900/30 via-purple-900/20 to-pink-900/30">
+            <div class="text-4xl mb-3 animate-bounce">🫂</div>
+            <h3 class="text-2xl font-bold text-pink-200 mb-2">Lagi Ngerasa Cape atau Pusing?</h3>
+            <p class="text-sm text-pink-100/80 max-w-lg mx-auto mb-6">
+                Kapanpun kamu ngerasa berat sama urusan di luar sana, pencet tombol di bawah buat dapet pelukan virtual terhangat dari aku!
+            </p>
+            <button onclick="triggerVirtualHug()" class="px-8 py-3.5 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-semibold rounded-full shadow-lg shadow-pink-500/30 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-3 mx-auto">
+                <i class="fas fa-heart text-xl animate-pulse"></i> Kirim Pelukan Virtual Ke Sayangg
+            </button>
+        </section>
+
+        <!-- Interactive Envelope / Love Letter Section -->
+        <section class="w-full max-w-xl text-center mb-16">
+            <h3 class="text-2xl font-bold text-pink-200 mb-2">Surat Rahasia Buat Kamu ✨</h3>
+            <p class="text-xs sm:text-sm text-slate-400 mb-8">Klik amplop di bawah ini buat buka pesan khusus dari aku...</p>
+            
+            <div class="flex justify-center">
+                <div class="envelope-wrapper">
+                    <div id="envelope" onclick="toggleEnvelope()" class="envelope">
+                        <div class="envelope-flap"></div>
+                        <div class="letter-preview flex flex-col justify-between text-left">
+                            <p class="font-hand text-lg text-purple-950 font-bold">Halo sayangg, ma luv ma cutie</p>
+                            <p class="text-xs text-slate-600 italic">Klik untuk membaca surat selengkapnya...</p>
+                            <div class="text-right text-pink-600 text-xs font-semibold">❤️ Read Letter</div>
+                        </div>
+                        <div class="envelope-pocket"></div>
+                        <div class="absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-pink-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md text-lg">
+                            💌
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-500 py-6 border-t border-slate-800/50">
+        Dibuat penuh dengan kasih sayang & cinta buat <span class="text-pink-400 font-semibold">ma luv ma cutie</span> ❤️
+    </footer>
+
+    <!-- MODAL 1: Photo Zoom & Detailed Note -->
+    <div id="photoModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-all">
+        <div class="glass-card max-w-lg w-full rounded-3xl p-6 relative border border-pink-500/30 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal('photoModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl w-8 h-8 rounded-full bg-slate-800/50 flex items-center justify-center">
+                <i class="fas fa-xmark"></i>
+            </button>
+            <div class="modal-img-container rounded-2xl overflow-hidden mb-4 border border-white/10 bg-slate-900/50" style="height: 320px;">
+                <img id="modalImg" src="" alt="Detail Foto">
+            </div>
+            <div class="text-center">
+                <span id="modalTag" class="text-xs px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full font-medium inline-block mb-3">
+                    Foto Kita Berdua
+                </span>
+                <p id="modalCaption" class="text-base sm:text-lg text-pink-100 font-sans leading-relaxed mb-6 italic">
+                    ""
+                </p>
+                <div class="flex items-center justify-center gap-4">
+                    <button id="modalReactBtn" onclick="reactToModalCard()" class="px-5 py-2.5 bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 border border-pink-500/40 rounded-full text-sm font-semibold transition flex items-center gap-2">
+                        <i class="fas fa-heart text-pink-400"></i> Kirim Love (<span id="modalReactCount">0</span>)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Full Love Letter Reading View -->
+    <div id="letterModal" class="fixed inset-0 bg-black/85 backdrop-blur-lg z-50 hidden flex items-center justify-center p-4 transition-all">
+        <div class="glass-card max-w-lg w-full rounded-3xl p-6 sm:p-8 relative border border-purple-500/40 bg-gradient-to-b from-slate-900/90 to-purple-950/90 shadow-2xl">
+            <button onclick="closeModal('letterModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl w-8 h-8 rounded-full bg-slate-800/50 flex items-center justify-center">
+                <i class="fas fa-xmark"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="text-4xl mb-2">💌</div>
+                <h3 class="text-2xl font-bold text-pink-300 font-sans">Surat Buat Sayangg</h3>
+                <p class="text-xs text-purple-300/70">Dari lubuk hati yang paling dalam</p>
+            </div>
+            <div class="glass-card p-6 rounded-2xl bg-white/5 border border-white/10 text-slate-200 font-hand text-xl leading-relaxed space-y-4 max-h-[60vh] overflow-y-auto">
+                <p>halo sayangg, ma luv ma cutie 💖</p>
+                <p>makasih ya udah selalu ada buat aku. kadang hidup atau urusan luar tuh suka bikin pusing dan cape banget, tapi pas inget aku punya kamu, rasanya semua jadi jauh lebih ringan.</p>
+                <p>kamu tuh bener-bener rumah tempat aku pulang dan dapet ketenangan.</p>
+                <p>tetep sama aku terus yaa, kita lewatin semuanya bareng-bareng. I love you so much! ❤️</p>
+            </div>
+            <div class="mt-6 text-center">
+                <button onclick="closeModal('letterModal'); triggerVirtualHug();" class="px-6 py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full text-sm shadow-lg shadow-pink-500/30 transition">
+                    Peluk Dulu 🤗
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: Virtual Hug Toast Alert -->
+    <div id="hugModal" class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-sm w-full rounded-3xl p-6 text-center border border-pink-500/40 shadow-2xl animate-float">
+            <div class="text-6xl mb-4 animate-bounce">🤗✨</div>
+            <h3 class="text-2xl font-bold text-pink-300 mb-2">Pelukan 100% Terkirim!</h3>
+            <p class="text-sm text-pink-100/90 leading-relaxed mb-6">
+                "Kalo kamu lagi cape atau ngerasa berat, aku selalu ada buat kamuu... dipeyuk erat-erat yaa! Jangan ngerasa sendiri, kita lewatin bareng-bareng! 💖"
+            </p>
+            <button onclick="closeModal('hugModal')" class="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold rounded-full text-sm shadow-md hover:scale-105 transition">
+                Makasih Sayangg ❤️
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // 1. Local Photo Data — 10 gambar tempatan dari folder images/
+        // Susunan customized: 8, 6, 5, 2, 7, 4, 1, 3, 9, 10
+        // 'id' digunakan sebagai kunci localStorage supaya muatan/gemar
+        // kekal terikat pada gambar yang betul walaupun susunan berubah.
+        const photoSources = [
+            { id: 8,  path: "images/8.png" },
+            { id: 6,  path: "images/6.png" },
+            { id: 5,  path: "images/5.png" },
+            { id: 2,  path: "images/2.png" },
+            { id: 7,  path: "images/7.png" },
+            { id: 4,  path: "images/4.png" },
+            { id: 1,  path: "images/1.png" },
+            { id: 3,  path: "images/3.png" },
+            { id: 9,  path: "images/9.png" },
+            { id: 10, path: "images/10.png" }
+        ];
+
+        const defaultPhotos = photoSources.map(p => p.path);
+
+        const romanticMessages = [
+            "dari awal ketemu kamuu aja udah krasa beda... kaya nemu tempat paling aman di tengah ributnya dunia. ✨",
+            "kalo lagi cape banget sama urusan dunia & organisasi, yang paling aku kangenin ya cuma kamuu... 🥺",
+            "pengen setiap hari ketemu kamuu, pengen dipeyuk kamuuu karna aku cuma bisa bener-bener tenang pas sama kamu. 💖",
+            "makasih ya udah selalu mau dengerin semua keluh kesah aku pas aku lagi ngerasa gagal atau cape... 🫂",
+            "liat kamu senyum aja tuh udah bisa bikin semua beban berat di kepala mendadak hilang gitu aja. 🌸",
+            "bahkan pas kita cuma duduk diem atau sekadar main bareng tanpa tujuan, itu tetep jadi momen paling berharga buat aku. ☕",
+            "makasih udah selalu percaya sama aku, bahkan di saat akunya sendiri lagi ngerasa gakuat... 🤍",
+            "tawa kamu tuh candu bangett, gapernah bosen liat kamu ketawa lepas kaya gini. 🥰",
+            "semoga ke depannya kita bisa tetep saling genggam yaa, lewatin semua lika-liku bareng-bareng. 🤝💫",
+            "i love you so much sayangg, kamu tetep jadi hal paling indah yang pernah hadir dalam hidup aku ❤️"
+        ];
+
+        let cardsData = [];
+        let activeModalIndex = 0;
+
+        // Load cards — foto bersifat tetap (tidak boleh diganti/ditambah),
+        // hanya jumlah "gemar" yang disimpan dalam LocalStorage
+        function initCardsData() {
+            cardsData = [];
+            for (let i = 0; i < photoSources.length; i++) {
+                const src = photoSources[i];
+                const savedLikes = localStorage.getItem(`romantic_likes_${src.id}`) || 0;
+                cardsData.push({
+                    id: src.id,
+                    image: src.path,
+                    caption: romanticMessages[i],
+                    likes: parseInt(savedLikes)
+                });
+            }
+        }
+
+        // Render Polaroid Cards Grid
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+
+            cardsData.forEach((card, index) => {
+                // Slight random rotation angle for aesthetic polaroid feel
+                const rotations = ['-rotate-2', 'rotate-2', '-rotate-1', 'rotate-1', 'rotate-3', '-rotate-3'];
+                const rotClass = rotations[index % rotations.length];
+
+                const cardEl = document.createElement('div');
+                cardEl.className = `glass-card glass-card-hover rounded-2xl p-4 sm:p-5 relative flex flex-col justify-between ${rotClass} border border-pink-500/20 shadow-xl transition-all duration-300`;
+
+                cardEl.innerHTML = `
+                    <div class="polaroid-tape"></div>
+                    <div class="polaroid-img-container relative group rounded-xl overflow-hidden mb-4 bg-slate-900/60 cursor-pointer" onclick="openPhotoModal(${index})">
+                        <img src="${card.image}" id="img-card-${index}" alt="Foto ${index + 1}" class="transition transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-semibold gap-2">
+                            <i class="fas fa-expand"></i> Lihat Foto Kita
+                        </div>
+                    </div>
+                    
+                    <div class="px-1 flex-1 flex flex-col justify-between">
+                        <p class="text-xs sm:text-sm text-pink-100/90 font-sans leading-relaxed mb-4 italic">
+                            "${card.caption}"
+                        </p>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-white/10 text-xs">
+                            <button onclick="likeSingleCard(${index})" class="text-pink-400 hover:text-pink-300 flex items-center gap-1.5 transition font-medium">
+                                <i class="fas fa-heart"></i> <span id="like-count-${index}">${card.likes}</span>
+                            </button>
+                            
+                            <span class="text-slate-400 text-[11px] flex items-center gap-1 select-none">
+                                <i class="fas fa-image text-pink-400/70"></i> Foto Kita
+                            </span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(cardEl);
+            });
+        }
+
+        // Like/Heart interaction per card
+        function likeSingleCard(index) {
+            cardsData[index].likes += 1;
+            localStorage.setItem(`romantic_likes_${cardsData[index].id}`, cardsData[index].likes);
+            document.getElementById(`like-count-${index}`).innerText = cardsData[index].likes;
+            if (activeModalIndex === index) {
+                document.getElementById('modalReactCount').innerText = cardsData[index].likes;
+            }
+            spawnHeartBurst();
+        }
+
+        function reactToModalCard() {
+            likeSingleCard(activeModalIndex);
+        }
+
+        // Modal triggers
+        function openPhotoModal(index) {
+            activeModalIndex = index;
+            const card = cardsData[index];
+            document.getElementById('modalImg').src = card.image;
+            document.getElementById('modalCaption').innerText = `"${card.caption}"`;
+            document.getElementById('modalTag').innerText = 'Foto Kita Berdua';
+            document.getElementById('modalReactCount').innerText = card.likes;
+            document.getElementById('photoModal').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // 2. Love Days Counter Logic
+        // Tarikh tetap — awal perkenalan: 4 Maret 2026 (tidak boleh diubah)
+        // Semua pengiraan berdasarkan waktu Indonesia Barat (WIB / UTC+7)
+        const anniversaryDate = '2026-03-04';
+
+        // Ambil waktu "dinding jam" semasa dalam WIB sebagai timestamp semu
+        // (nilai dalaman mewakili saat-from-epoch, dihitung daripada jam WIB)
+        function getWIBNow() {
+            const parts = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'Asia/Jakarta',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).formatToParts(new Date());
+
+            const p = {};
+            parts.forEach(({ type, value }) => { p[type] = value; });
+
+            return new Date(Date.UTC(
+                Number(p.year),
+                Number(p.month) - 1,
+                Number(p.day),
+                Number(p.hour) % 24,
+                Number(p.minute),
+                Number(p.second)
+            ));
+        }
+
+        // Tarikh mula hubungan, ditafsirkan sebagai 00:00:00 WIB pada 4 Maret 2026
+        function getWIBStart() {
+            const [y, m, d] = anniversaryDate.split('-').map(Number);
+            return new Date(Date.UTC(y, m - 1, d));
+        }
+
+        function updateCounter() {
+            const start = getWIBStart();
+            const now = getWIBNow();
+            const diff = now - start;
+
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((diff / 1000 / 60) % 60);
+                const seconds = Math.floor((diff / 1000) % 60);
+
+                document.getElementById('daysCount').innerText = days;
+                document.getElementById('hoursCount').innerText = hours;
+                document.getElementById('minutesCount').innerText = minutes;
+                document.getElementById('secondsCount').innerText = seconds;
+            }
+        }
+
+        // 3. Envelope Interactive Letter
+        function toggleEnvelope() {
+            const envelope = document.getElementById('envelope');
+            envelope.classList.toggle('open');
+            spawnHeartBurst();
+            setTimeout(() => {
+                document.getElementById('letterModal').classList.remove('hidden');
+            }, 600);
+        }
+
+        // 4. Virtual Hug Function
+        function triggerVirtualHug() {
+            document.getElementById('hugModal').classList.remove('hidden');
+            for(let i = 0; i < 3; i++) {
+                setTimeout(spawnHeartBurst, i * 200);
+            }
+        }
+
+        // 5. Canvas Heart Particles Effect
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || canvas.height + 20;
+                this.size = Math.random() * 15 + 8;
+                this.speedY = Math.random() * 2 + 1;
+                this.speedX = (Math.random() - 0.5) * 1.5;
+                this.opacity = 1;
+                this.color = `hsl(${Math.random() * 40 + 330}, 100%, 75%)`;
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                this.opacity -= 0.005;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(this.opacity, 0);
+                ctx.fillStyle = this.color;
+                ctx.font = `${this.size}px sans-serif`;
+                ctx.fillText('❤️', this.x, this.y);
+                ctx.restore();
+            }
+        }
+
+        function spawnHeartBurst(e) {
+            const x = e ? e.clientX : window.innerWidth / 2;
+            const y = e ? e.clientY : window.innerHeight / 2;
+            for (let i = 0; i < 18; i++) {
+                let p = new Particle(x, y);
+                p.speedY = (Math.random() - 0.5) * 6;
+                p.speedX = (Math.random() - 0.5) * 6;
+                particles.push(p);
+            }
+        }
+
+        window.addEventListener('click', (e) => {
+            // Avoid triggering particle burst if clicking interactive buttons directly
+            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                spawnHeartBurst(e);
+            }
+        });
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Randomly spawn background floating hearts
+            if (Math.random() < 0.05) {
+                particles.push(new Particle());
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].opacity <= 0 || particles[i].y < -20) {
+                    particles.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        // 6. YouTube Player — "Penjaga Hati" by Nadhif Basalamah
+        const SONG_VIDEO_ID = 'jia3fhBQ8qI'; // nadhif basalamah - penjaga hati (Official Music Video)
+        let ytPlayer = null;
+        let isPlaying = false;
+        let ytReady = false;
+        let pendingPlay = false;
+        let videoLoaded = false;
+
+        // Called by the YouTube IFrame API once the SDK is available
+        function onYouTubeIframeAPIReady() {
+            if (ytPlayer) return;
+            ytPlayer = new YT.Player('ytPlayer', {
+                height: '1',
+                width: '1',
+                videoId: SONG_VIDEO_ID,
+                playerVars: {
+                    autoplay: 0,
+                    controls: 0,
+                    disablekb: 1,
+                    modestbranding: 1,
+                    playsinline: 1,
+                    rel: 0,
+                    loop: 1,
+                    playlist: SONG_VIDEO_ID
+                },
+                events: {
+                    onReady: (e) => {
+                        ytReady = true;
+                        if (pendingPlay) {
+                            pendingPlay = false;
+                            startSong();
+                        }
+                    },
+                    onStateChange: (e) => {
+                        // YT.PlayerState.PLAYING === 1
+                        if (e.data === 1) {
+                            isPlaying = true;
+                            updateMusicUI();
+                        }
+                        // YT.PlayerState.ENDED === 0
+                        if (e.data === 0) {
+                            isPlaying = false;
+                            updateMusicUI();
+                        }
+                    }
+                }
+            });
+        }
+
+        // Mula main lagu. Gunakan loadVideoById pada main pertama kerana
+        // playVideo() sahaja tidak mencetuskan main pada pemain yang belum dimuatkan.
+        function startSong() {
+            if (!ytPlayer || !ytReady) {
+                pendingPlay = true;
+                return;
+            }
+            if (!videoLoaded) {
+                videoLoaded = true;
+                ytPlayer.loadVideoById(SONG_VIDEO_ID);
+            } else {
+                ytPlayer.playVideo();
+            }
+            isPlaying = true;
+            updateMusicUI();
+        }
+
+        function updateMusicUI() {
+            const btnText = document.getElementById('musicText');
+            const icon = document.getElementById('musicIcon');
+            if (isPlaying) {
+                btnText.innerText = 'Sedang Diputar';
+                icon.className = 'fas fa-volume-high text-pink-400 animate-bounce';
+            } else {
+                btnText.innerText = 'Putar Lagu';
+                icon.className = 'fas fa-music text-pink-400';
+            }
+        }
+
+        function toggleMusic() {
+            if (!ytPlayer || !ytReady) {
+                // API belum sedia — tandakan untuk mula sebaik sahaja pemain sedia
+                pendingPlay = true;
+                if (typeof YT === 'undefined' || !YT.Player) {
+                    // Skrip API masih dimuatkan; onYouTubeIframeAPIReady akan controlling
+                    isPlaying = true;
+                    updateMusicUI();
+                    return;
+                }
+                onYouTubeIframeAPIReady();
+                isPlaying = true;
+                updateMusicUI();
+                return;
+            }
+
+            if (isPlaying) {
+                ytPlayer.pauseVideo();
+                isPlaying = false;
+            } else {
+                startSong();
+            }
+            updateMusicUI();
+        }
+
+        // On Page Load Initialize
+        window.onload = function() {
+            initCardsData();
+            renderGallery();
+            setInterval(updateCounter, 1000);
+            updateCounter();
+            animateParticles();
+        };
+    </script>
+</body>
+</html>

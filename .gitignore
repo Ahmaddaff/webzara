@@ -1,0 +1,17 @@
+# Internal WorkBuddy project data & memory (not part of the website)
+.workbuddy-ai/
+
+# Redundant optimized duplicates (images/ already holds optimized copies)
+images_opt/
+
+# Screenshot / preview artifacts
+shot-hero.png
+*.png.bak
+
+# Dependencies
+node_modules/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.log
