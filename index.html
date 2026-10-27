@@ -661,7 +661,10 @@
         let isPlaying = false;
         let ytReady = false;
         let pendingPlay = false;
-        let videoLoaded = false;
+        let awaitingResume = false;  // user klik saat pemain belum siap → main segera bila sedia
+        let userPlay = false;        // true hanya bila user benar-benar mahu lagu berbunyi
+        let warmupTimer = null;      // timer pra-panas senyap (mute) semasa page load
+        let playGuard = null;        // jaring keselamatan mula-main
 
         // Called by the YouTube IFrame API once the SDK is available
         function onYouTubeIframeAPIReady() {
@@ -683,19 +686,47 @@
                 events: {
                     onReady: (e) => {
                         ytReady = true;
-                        if (pendingPlay) {
+
+                        // PRA-PANAS SENYAP: mainkan lagu tanpa bunyi (mute) sekejap sebaik
+                        // pemain sedia. Ini menyiapkan pipeline media + buffer lebih awal,
+                        // jadi bila user tekan "Putar Lagu" bunyi keluar hampir seketika
+                        // (bukan lagi tunggu buffering dari kosong).
+                        try {
+                            ytPlayer.mute();
+                            ytPlayer.playVideo();
+                        } catch (err) {}
+
+                        if (pendingPlay || awaitingResume) {
                             pendingPlay = false;
+                            awaitingResume = false;
                             startSong();
                         }
+                        // Jika tidak, biarkan pra-panas berjalan. Jeda akan dijadualkan
+                        // sebaik sahaja pemain benar-benar mula bermain (lihat onStateChange).
                     },
                     onStateChange: (e) => {
-                        // YT.PlayerState.PLAYING === 1
-                        if (e.data === 1) {
-                            isPlaying = true;
-                            updateMusicUI();
-                        }
-                        // YT.PlayerState.ENDED === 0
-                        if (e.data === 0) {
+                        if (e.data === 1) {            // PLAYING
+                            if (userPlay) {
+                                isPlaying = true;
+                                updateMusicUI();
+                            } else if (!warmupTimer) {
+                                // Pra-panas senyap benar-benar bermain → beri sedikit masa
+                                // untuk buffer terisi, kemudian jeda supaya lagu mula awal
+                                // bila user menekan butang.
+                                warmupTimer = setTimeout(() => {
+                                    if (userPlay) return;
+                                    try {
+                                        ytPlayer.pauseVideo();
+                                        ytPlayer.mute();
+                                    } catch (err) {}
+                                    isPlaying = false;
+                                    updateMusicUI();
+                                }, 900);
+                            }
+                        } else if (e.data === 2) {      // PAUSED
+                            if (userPlay) { isPlaying = false; updateMusicUI(); }
+                        } else if (e.data === 0) {      // ENDED
+                            userPlay = false;
                             isPlaying = false;
                             updateMusicUI();
                         }
@@ -704,21 +735,37 @@
             });
         }
 
-        // Mula main lagu. Gunakan loadVideoById pada main pertama kerana
-        // playVideo() sahaja tidak mencetuskan main pada pemain yang belum dimuatkan.
+        // Mula main lagu. Pemain sudah dipra-panaskan semasa page load, jadi cukup
+        // unmute + playVideo() — bunyi keluar hampir seketika tanpa buffering ulang.
         function startSong() {
             if (!ytPlayer || !ytReady) {
                 pendingPlay = true;
+                userPlay = true;
+                isPlaying = true;
+                updateMusicUI();
                 return;
             }
-            if (!videoLoaded) {
-                videoLoaded = true;
-                ytPlayer.loadVideoById(SONG_VIDEO_ID);
-            } else {
-                ytPlayer.playVideo();
-            }
+            userPlay = true;
+            if (warmupTimer) { clearTimeout(warmupTimer); warmupTimer = null; }
+            try { ytPlayer.unMute(); ytPlayer.setVolume(100); } catch (err) {}
+            ytPlayer.playVideo();
             isPlaying = true;
             updateMusicUI();
+
+            // Jaring keselamatan: jika dalam 2.5s pemain masih tersekat (bukan main/
+            // buffering), paksa muat & main dari awal supaya user tetap dengar lagu.
+            if (playGuard) { clearInterval(playGuard); playGuard = null; }
+            const guardStart = performance.now();
+            playGuard = setInterval(() => {
+                if (!ytPlayer || !userPlay) { clearInterval(playGuard); playGuard = null; return; }
+                let st = -99;
+                try { st = ytPlayer.getPlayerState(); } catch (err) { clearInterval(playGuard); playGuard = null; return; }
+                if (st === 1 || st === 3) { clearInterval(playGuard); playGuard = null; return; }  // PLAYING / BUFFERING
+                if (performance.now() - guardStart > 2500) {
+                    clearInterval(playGuard); playGuard = null;
+                    try { ytPlayer.loadVideoById(SONG_VIDEO_ID); } catch (err) {}
+                }
+            }, 150);
         }
 
         function updateMusicUI() {
@@ -735,21 +782,22 @@
 
         function toggleMusic() {
             if (!ytPlayer || !ytReady) {
-                // API belum sedia — tandakan untuk mula sebaik sahaja pemain sedia
+                // Pemain belum sedia — tandakan supaya lagu terus main sebaik sahaja sedia.
                 pendingPlay = true;
-                if (typeof YT === 'undefined' || !YT.Player) {
-                    // Skrip API masih dimuatkan; onYouTubeIframeAPIReady akan controlling
-                    isPlaying = true;
-                    updateMusicUI();
-                    return;
-                }
-                onYouTubeIframeAPIReady();
+                awaitingResume = true;
+                userPlay = true;
                 isPlaying = true;
                 updateMusicUI();
+                // Jika skrip API sudah ada tetapi pemain belum dibina, bina sekarang.
+                if (typeof YT !== 'undefined' && YT.Player && !ytPlayer) {
+                    onYouTubeIframeAPIReady();
+                }
                 return;
             }
 
             if (isPlaying) {
+                userPlay = false;
+                if (playGuard) { clearInterval(playGuard); playGuard = null; }
                 ytPlayer.pauseVideo();
                 isPlaying = false;
             } else {
